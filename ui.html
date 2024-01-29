@@ -1,0 +1,696 @@
+<!-- src/ui.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Figma Plugin</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background-color: #008CBA;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+    }
+
+
+    /* .tabs {
+      display: flex;
+      list-style-type: none;
+      padding: 0;
+    } */
+
+    .tab {
+      cursor: pointer;
+      padding: 10px 20px;
+      margin: 0;
+      border: 1px solid #ccc;
+      border-radius: 5px 5px 0 0;
+      background: var(--Iris-60, #A5A6F6);
+    }
+
+    .tab.active {
+      background: var(--Iris-100, #5D5FEF);
+    }
+
+    .tab-content {
+      display: none !important;
+    }
+
+    .tab-content.active {
+      display: flex !important;
+    }
+
+    .hideContent {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- container -->
+  <div style="
+    border-radius: 12px;
+    background: #FFF;
+    ">
+    <!-- header -->
+    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+      <p style="
+        color: #000;
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        ">Dummy Generator</p>
+      <p style="
+        color: #000;
+        font-family: Inter;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 300;
+        line-height: normal;
+        ">1.0.0</p>
+    </div>
+    <!-- tabs -->
+    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; gap: 10px;"
+      class="tabs" id="tabs">
+      <!-- tabs header -->
+      <button style="
+      display: flex;
+width: 100%;
+padding: 8px 12px;
+justify-content: center;
+align-items: center;
+gap: 10px;
+border-radius: 4px;
+color: #FFF;
+font-family: Inter;
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+      " class="tab" onclick="changeTab(0)">
+        Replace
+      </button>
+      <button style="
+      display: flex;
+width: 100%;
+padding: 8px 12px;
+justify-content: center;
+align-items: center;
+gap: 10px;
+border-radius: 4px;
+color: #FFF;
+font-family: Inter;
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+      " class="tab" onclick="changeTab(1)">
+        Find and Insert </button>
+    </div>
+    <!-- divider -->
+    <div style="
+    background: #DEDEDE;
+    height: 1px;
+    width: 100%;
+    margin-top: 13px;
+    ">
+    </div>
+    <!-- tabs content -->
+    <div class="tabs" id="tabs">
+      <!-- Tab Replace -->
+      <div style="
+      display: flex;
+      align-items: center;
+      gap:10px
+      " class="tab-content" id="tabContent1">
+        <select style="height: 35px;" id="selectCategory" onchange="onChangeCategory()">
+          <option>Category</option>
+        </select>
+        <select style="height: 35px;" id="selectSubCategory">
+          <option>Subcategory</option>
+        </select>
+        <button onclick="handleIsert()" style="
+        display: flex;
+        height: 35px;
+        width: 89px;
+        padding: 6px 8px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+        border-radius: 4px;
+        background: var(--Fuschia-100, #EF5DA8);
+        color: #FFF;
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        ">
+          Insert
+        </button>
+      </div>
+      <!-- Tab Find and Insert -->
+      <div style="
+      display: flex;
+      align-items: center;
+      gap:10px;
+      width: 100%;
+      margin: 20px 0;
+      " class="tab-content" id="tabContent2">
+        <div style="width: 100%;" id="inputFindSection" class="inputFindSection">
+          <div style="width: 100%;">
+            <label style="
+            color: var(--Semantic-Text-text-body-50, #121138);
+            /* Body 2/Medium */
+            font-family: Poppins;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 133%; /* 18.62px */
+            letter-spacing: 0.056px;
+            ">Find</label>
+            <input style="
+            width:100%;
+            display: flex;
+padding: 10px 12px;
+align-items: center;
+gap: 8px;
+align-self: stretch;
+border-radius: 4px;
+border: 1px solid var(--Semantic-Border-border-input, #EEE);
+background: var(--Semantic-Background-bg-type-1, #FCFCFD);
+            " type="text" id="searchInputFind" placeholder="Keyword">
+            <div style="display: flex; justify-content: center; width: 100%;">
+              <button style="
+              display: flex;
+width: 106px;
+height: 29px;
+padding: 6px 8px;
+justify-content: center;
+align-items: center;
+gap: 10px;
+border-radius: 4px;
+background: var(--Fuschia-100, #EF5DA8);
+              " onclick="gotoFindSection()">Find</button>
+            </div>
+          </div>
+        </div>
+        <div style="width: 100%;" id="insertFindAndReplaceSection" class="insertFindAndReplaceSection hideContent">
+          <div style="
+          display: flex;
+          align-items: center;
+          gap:10px;
+          width: 100%;
+          justify-content: space-between;
+          ">
+            <p id="textFound"></p>
+
+            <button style="
+            background: transparent;
+    padding: 0;
+    margin: 0;
+    color: var(--Semantic-Text-text-body-50, #121138);
+text-align: center;
+display: flex;
+align-items: center;
+font-family: Poppins;
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: 133%; /* 18.62px */
+letter-spacing: 0.056px;
+gap: 8px;
+            " onclick="resetInputFindAndReplaceContent()">
+              Retry <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M7.99998 1.33333C4.59422 1.33333 1.83331 4.09424 1.83331 7.5C1.83331 10.9058 4.59422 13.6667 7.99998 13.6667C11.0909 13.6667 13.6515 11.3921 14.0977 8.42562C14.1388 8.15255 14.3935 7.96448 14.6665 8.00556C14.9396 8.04663 15.1277 8.3013 15.0866 8.57437C14.5678 12.0229 11.5931 14.6667 7.99998 14.6667C4.04194 14.6667 0.833313 11.458 0.833313 7.5C0.833313 3.54195 4.04194 0.333328 7.99998 0.333328C10.9395 0.333328 13.4647 2.10306 14.5701 4.63314C14.6807 4.88619 14.5652 5.18095 14.3121 5.2915C14.0591 5.40206 13.7643 5.28656 13.6537 5.03351C12.7017 2.85452 10.5279 1.33333 7.99998 1.33333Z"
+                  fill="#070D12" />
+              </svg>
+            </button>
+
+          </div>
+
+
+          <div style="
+          display: flex;
+          align-items: center;
+          gap:10px
+          ">
+            <select style="height: 35px;" id="selectCategoryFindAndInsert" onchange="onChangeCategory()">
+              <option>Category</option>
+            </select>
+            <select style="height: 35px;" id="selectSubCategoryFindAndInsert">
+              <option>Subcategory</option>
+            </select>
+            <button onclick="handleFindAndReplace()" style="
+            display: flex;
+            height: 35px;
+            width: 89px;
+            padding: 6px 8px;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            border-radius: 4px;
+            background: var(--Fuschia-100, #EF5DA8);
+            color: #FFF;
+            font-family: Inter;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            ">
+              Insert
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+  <!-- <input type="text" id="searchInput" placeholder="Enter text to search">
+  <button onclick="searchText()">Search</button>
+  <div id="result"></div> -->
+  <!-- <ul class="tabs" id="tabs">
+    <li class="tab" onclick="changeTab(0)">Tab 1</li>
+    <li class="tab" onclick="changeTab(1)">Tab 2</li>
+    <li class="tab" onclick="changeTab(2)">Tab 3</li>
+  </ul>
+  <div class="tab-content" id="tabContent1">
+    <p>Content for Tab 1</p>
+  </div>
+  <div class="tab-content" id="tabContent2">
+    <p>Content for Tab 2</p>
+  </div>
+  <div class="tab-content" id="tabContent3">
+    <p>Content for Tab 3</p>
+  </div> -->
+  <!-- <input type="text" id="searchInput" placeholder="Enter text to search">
+  <button onclick="searchText()">Search</button>
+  <div id="result"></div>
+  <div id="tabs">
+    <button class="tab" onclick="openTab('Name')">Name</button>
+    <button class="tab" onclick="openTab('Address')">Address</button>
+    <button class="tab" onclick="openTab('Phone Number')">Phone</button>
+    <button class="tab" onclick="openTab('Food')">Food</button>
+    <button class="tab" onclick="openTab('Beverages')">Beverages</button>
+    <button class="tab" onclick="openTab('Food')">Food</button>
+    <button class="tab" onclick="openTab('Beverages')">Beverages</button>
+  </div>
+  <div>
+    <div id="Name" class="tab-content">
+      <label>
+        <input type="radio" name="nameType" value="short" checked> Short Name
+      </label>
+      <label>
+        <input type="radio" name="nameType" value="full"> Full Name
+      </label>
+      <button onclick="injectText('Name')">Inject</button>
+    </div>
+
+    <div id="Address" class="tab-content">
+      <button onclick="injectText('Address')">Inject</button>
+    </div>
+
+    <div id="Phone" class="tab-content">
+      <button onclick="injectText('Phone')">Inject</button>
+    </div>
+
+    <div id="Foods" class="tab-content">
+      <button onclick="injectText('Foods')">Inject</button>
+    </div>
+
+    <div id="Beverages" class="tab-content">
+      <button onclick="injectText('Beverages')">Inject</button>
+    </div>
+  </div>
+ -->
+
+  <!-- src/ui.html -->
+
+  <!-- ... (previous code) ... -->
+
+  <script>
+    const fullNames = ['Liam Müller', 'Emma Schmidt', 'Noah Becker', 'Olivia Wagner', 'Elias Richter', 'Sophia Schäfer', 'Mia Fischer', 'Lukas Hoffmann', 'Amelia Schulz', 'Benjamin Bauer', 'Emma Mayer', 'Paul Koch', 'Hannah Zimmermann', 'Leonard Schmitz'];
+    const shortNames = ['Liam', 'Emma', 'Noah', 'Olivia', 'Elias', 'Sophia', 'Mia', 'Lukas', 'Amelia', 'Benjamin', 'Emma', 'Paul', 'Hannah', 'Leonard'];
+    const phoneNumbers = [
+      '+1 (123) 456-7890',
+      '+44 20 7946 0958',
+      '+81 3-1234-5678',
+      '+49 30 12345678',
+      '+33 1 23 45 67 89',
+      '+61 2 1234 5678',
+      '+86 10 1234 5678',
+      '+91 11 1234 5678',
+      '+7 495 123-45-67',
+      '+39 02 1234 5678',
+      '+34 91 123 45 67',
+      '+55 11 1234-5678',
+      '+61 8 1234 5678',
+      '+52 55 1234 5678',
+      '+64 3-123 4567',
+      '+351 21 123 4567',
+      '+46 8 123 456 78',
+      '+31 20 123 4567',
+      '+41 44 123 45 67',
+      '+82 2 1234 5678',
+    ];
+    const foodNames = [
+      'Avocado Toast',
+      'Quinoa Salad',
+      'Caprese Panini',
+      'Kale Caesar Salad',
+      'Truffle Risotto',
+      'Pesto Chicken Pasta',
+      'Grilled Salmon',
+      'Butternut Squash Soup',
+      'Mushroom Ravioli',
+      'Beef Wellington',
+      'Lobster Bisque',
+      'Crispy Duck Confit',
+      'Eggplant Parmesan',
+      'Shrimp and Grits',
+      'Chicken Alfredo',
+      'Cobb Salad',
+      'Gourmet Macaroni and Cheese',
+      'Roasted Brussels Sprouts',
+      'Bacon-Wrapped Scallops',
+      'Ratatouille',
+    ];
+    const beverageNames = [
+      'Mojito',
+      'Cosmopolitan',
+      'Margarita',
+      'Old Fashioned',
+      'Negroni',
+      'Piña Colada',
+      'Martini',
+      'Whiskey Sour',
+      'Mai Tai',
+      'Moscow Mule',
+      'Bloody Mary',
+      'Manhattan',
+      'Gin and Tonic',
+      'Caipirinha',
+      'Tom Collins',
+      'Mint Julep',
+      'Bellini',
+      'Paloma',
+      'Espresso Martini',
+      'Blue Lagoon',
+    ];
+
+    function openTab(tabName) {
+      const tabs = document.getElementsByClassName('tab-content');
+      for (let i = 0; i < tabs.length; i++) {
+        tabs[i].style.display = 'none';
+      }
+      document.getElementById(tabName).style.display = 'block';
+    }
+
+    function searchText() {
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+      console.log('searchQuery', searchQuery)
+      // Send a message to the main plugin code
+      parent.postMessage({ pluginMessage: { type: 'searchText', searchQuery } }, '*');
+    }
+
+    function injectText(tabName) {
+      let textToInsert = '';
+
+      if (tabName === 'Name') {
+        const nameType = document.querySelector('input[name="nameType"]:checked').value;
+
+        if (nameType === 'full') {
+          console.log('-----');
+          console.log(fullNames);
+          textToInsert = fullNames;
+          // console.log('9992913912931293');
+          // console.log(textToInsert);
+          // console.log('00000');
+        } else {
+          textToInsert = shortNames;
+        }
+      }
+      else if (tabName === 'Phone') {
+
+      }
+      else {
+        textToInsert = document.getElementById('addressDropdown').value;
+      }
+
+      console.log(textToInsert);
+      parent.postMessage({ pluginMessage: { type: 'insertText', textToInsert } }, 'https://www.figma.com');
+    }
+
+
+    function getUniqueRandomItem(array) {
+      if (array.length === 0) {
+        // If the array is empty, reset it with the original data
+        fullNames = ['Liam Müller', 'Emma Schmidt', 'Noah Becker', 'Olivia Wagner', 'Elias Richter', 'Sophia Schäfer', 'Mia Fischer', 'Lukas Hoffmann', 'Amelia Schulz', 'Benjamin Bauer', 'Emma Mayer', 'Paul Koch', 'Hannah Zimmermann', 'Leonard Schmitz'];
+        return null; // Signal to reset the array
+      }
+
+      const randomIndex = Math.floor(Math.random() * array.length);
+      const uniqueItem = array.splice(randomIndex, 1)[0];
+      return uniqueItem;
+    }
+  </script>
+
+  <!-- ... (remaining code) ... -->
+
+  <!-- Rendy code -->
+  <script>
+    const CATEGORY_OPTIONS = [
+      {
+        name: "Drink",
+        value: "Drink",
+      },
+      {
+        name: "Food",
+        value: "Food",
+      },
+    ];
+
+    const SUB_CATEGORY_FOOD_OPTIONS = [
+      {
+        name: "KFC",
+        value: "KFC",
+      },
+      {
+        name: "Mc Donalds",
+        value: "Mc Donalds",
+      },
+    ];
+
+    const SUB_CATEGORY_DRINK_OPTIONS = [
+      {
+        name: "Cola-Cola",
+        value: "Cola-Cola",
+      },
+      {
+        name: "Pepsi",
+        value: "Pepsi",
+      },
+      {
+        name: "Red Bull",
+        value: "Red Bull",
+      },
+    ];
+    // Function to add categoryOptions to the select dropdown
+    function addOptionCategory() {
+      // Get the select element by its ID
+      var selectCategory = document.getElementById("selectCategory");
+
+      // Loop through the CATEGORY_OPTIONS and add them to the select element
+      for (var i = 0; i < CATEGORY_OPTIONS.length; i++) {
+        var option = document.createElement("option");
+        option.text = CATEGORY_OPTIONS[i].name;
+        option.value = CATEGORY_OPTIONS[i].value;
+        selectCategory.add(option);
+      }
+
+      const selectCategoryFindAndInsert = document.getElementById("selectCategoryFindAndInsert");
+
+      // Loop through the CATEGORY_OPTIONS and add them to the select element
+      for (var i = 0; i < CATEGORY_OPTIONS.length; i++) {
+        var option = document.createElement("option");
+        option.text = CATEGORY_OPTIONS[i].name;
+        option.value = CATEGORY_OPTIONS[i].value;
+        selectCategoryFindAndInsert.add(option);
+      }
+    }
+
+    // Call the addOptionCategory function to populate the select dropdown
+    addOptionCategory();
+
+    function handleChangeCategory(event) {
+      // Get the selected value
+      var selectedValue = event.target.value;
+
+      // Display the selected value (you can replace this with your custom logic)
+      console.log("Selected value: " + selectedValue);
+
+      var selectSubCategory = document.getElementById("selectSubCategory");
+      let FIX_OPTIONS = []
+      if (selectedValue === "Drink") {
+        FIX_OPTIONS = SUB_CATEGORY_DRINK_OPTIONS;
+      } else if (selectedValue === "Food") {
+        FIX_OPTIONS = SUB_CATEGORY_FOOD_OPTIONS;
+      }
+
+      // Clear all sub category options
+      while (selectSubCategory.options.length > 0) {
+        selectSubCategory.remove(0);
+      }
+
+      for (var i = 0; i < FIX_OPTIONS.length; i++) {
+        var option = document.createElement("option");
+        option.text = FIX_OPTIONS[i].name;
+        option.value = FIX_OPTIONS[i].value;
+        selectSubCategory.add(option);
+      }
+
+    }
+
+    document.getElementById("selectCategory").addEventListener("change", handleChangeCategory);
+
+    function handleIsert() {
+      // Get the select element by its ID
+      var selectSubCategory = document.getElementById("selectSubCategory");
+
+      // Get the selected value
+      var selectedValue = selectSubCategory.value;
+
+      // Display the selected value (you can replace this with your custom logic)
+      console.log("Selected value: " + selectedValue);
+      parent.postMessage({ pluginMessage: { type: 'insertText', textToInsert: selectedValue } }, 'https://www.figma.com');
+
+    }
+
+    function changeTab(tabIndex) {
+      // Hide all tab contents and remove 'active' class from tabs and tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      // Show the selected tab content and add 'active' class to the selected tab
+      const selectedTabContent = document.getElementById(`tabContent${tabIndex + 1}`);
+      selectedTabContent.classList.add('active');
+
+      const selectedTab = document.querySelector(`#tabs .tab:nth-child(${tabIndex + 1})`);
+      selectedTab.classList.add('active');
+    }
+
+    function resetInputFindAndReplaceContent() {
+      const contentFindAndReplace = document.getElementById(`insertFindAndReplaceSection`);
+      contentFindAndReplace.classList.add('hideContent');
+      const contentInputFindAndReplace = document.getElementById(`inputFindSection`);
+      contentInputFindAndReplace.classList.remove('hideContent');
+    }
+
+    function gotoFindSection() {
+      console.log('gotoFindSection')
+      const searchQuery = document.getElementById('searchInputFind').value.toLowerCase();
+      console.log('searchQuery', searchQuery)
+      // Send a message to the main plugin code
+      parent.postMessage({ pluginMessage: { type: 'searchText', searchQuery } }, '*');
+    }
+
+    window.onmessage = (event) => {
+      const contentFindAndReplace = document.getElementById(`insertFindAndReplaceSection`);
+      contentFindAndReplace.classList.remove('hideContent');
+      const contentInputFindAndReplace = document.getElementById(`inputFindSection`);
+      contentInputFindAndReplace.classList.add('hideContent');
+
+      const msg = event.data.pluginMessage;
+      if (msg && msg.type === 'toUI') {
+        console.log('Data received in Figma UI:', msg.data);
+        const searchQuery = document.getElementById('searchInputFind').value;
+        const textFound = document.getElementById("textFound");
+        // Add text to the paragraph
+        textFound.textContent = `${msg.data} Text found for “${searchQuery}”`;
+      }
+    };
+
+    function handleChangeCategoryFindAndInsert(event) {
+      // Get the selected value
+      var selectedValue = event.target.value;
+
+      // Display the selected value (you can replace this with your custom logic)
+      console.log("Selected value: " + selectedValue);
+
+      const selectSubCategoryFindAndInsert = document.getElementById("selectSubCategoryFindAndInsert");
+      let FIX_OPTIONS = []
+      if (selectedValue === "Drink") {
+        FIX_OPTIONS = SUB_CATEGORY_DRINK_OPTIONS;
+      } else if (selectedValue === "Food") {
+        FIX_OPTIONS = SUB_CATEGORY_FOOD_OPTIONS;
+      }
+
+      // Clear all sub category options
+      while (selectSubCategoryFindAndInsert.options.length > 0) {
+        selectSubCategoryFindAndInsert.remove(0);
+      }
+
+      for (var i = 0; i < FIX_OPTIONS.length; i++) {
+        var option = document.createElement("option");
+        option.text = FIX_OPTIONS[i].name;
+        option.value = FIX_OPTIONS[i].value;
+        selectSubCategoryFindAndInsert.add(option);
+      }
+
+    }
+
+    document.getElementById("selectCategoryFindAndInsert").addEventListener("change", handleChangeCategoryFindAndInsert);
+
+
+    function handleFindAndReplace() {
+      // Get the select element by its ID
+      var selectSubCategory = document.getElementById("selectSubCategoryFindAndInsert");
+      // selectCategoryFindAndInsert selectSubCategoryFindAndInsert
+      // Get the selected value
+      var selectedValue = selectSubCategory.value;
+
+      // Display the selected value (you can replace this with your custom logic)
+      console.log("Selected value: " + selectedValue);
+      const searchQuery = document.getElementById('searchInputFind').value;
+      console.log({ pluginMessage: { type: 'findAndInsert', findText: searchQuery, replaceText: selectedValue } })
+      parent.postMessage({ pluginMessage: { type: 'findAndInsert', findText: searchQuery, replaceText: selectedValue } }, 'https://www.figma.com');
+    }
+
+  </script>
+</body>
+
+</html>
