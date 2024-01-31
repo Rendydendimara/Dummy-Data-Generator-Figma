@@ -46,7 +46,7 @@ figma.ui.onmessage = async (msg) => {
       await loadFontsAsync();
 
       // Create a copy of the names array to avoid modifying the original array
-      const namesCopy = msg.textToInsert // [...msg.textToInsert];
+      const namesCopy = getListRandomData(msg.textToInsert) // [...msg.textToInsert];
       console.log('namesCopy', namesCopy)
       // Apply changes
       selectedLayers.forEach(async (layer, index) => {
@@ -56,11 +56,11 @@ figma.ui.onmessage = async (msg) => {
           // Check if there are still names in the array
           if (namesCopy.length > 0) {
             // Get a unique name for the current layer
-            textToInsert = namesCopy; // getUniqueRandomItem(namesCopy);
+            textToInsert = getUniqueRandomItem(namesCopy);
           } else {
             // If the array is empty, reset it with the original data
             namesCopy.push(...msg.textToInsert);
-            textToInsert = namesCopy; // getUniqueRandomItem(namesCopy);
+            textToInsert = getUniqueRandomItem(namesCopy);
           }
 
           // Store the original text for undo purposes
@@ -82,6 +82,7 @@ figma.ui.onmessage = async (msg) => {
     console.log(msg.findText, msg.replaceText)
     const findText = msg.findText;
     const replaceText = msg.replaceText;
+
     const selectedLayers = figma.currentPage.selection;
     console.log('selectedLayers.length', selectedLayers.length)
     if (selectedLayers.length > 0) {
@@ -94,12 +95,24 @@ figma.ui.onmessage = async (msg) => {
         if ('characters' in layer) {
           // if (layer.type === "TEXT") {  // Check if the layer is a text layer
 
+          const namesCopy = getListRandomData(replaceText) // [...msg.textToInsert];
+          let textToInsert = '';
+          // Check if there are still names in the array
+          if (namesCopy.length > 0) {
+            // Get a unique name for the current layer
+            textToInsert = getUniqueRandomItem(namesCopy);
+          } else {
+            // If the array is empty, reset it with the original data
+            namesCopy.push(...msg.textToInsert);
+            textToInsert = getUniqueRandomItem(namesCopy);
+          }
+
           // Get the current text content
           const currentText = layer.characters;
           console.log('currentText', currentText)
 
           // Replace the text
-          const newText = currentText.replace(new RegExp(findText, 'g'), replaceText);
+          const newText = currentText.replace(new RegExp(findText, 'g'), textToInsert);
           console.log('newText', newText)
           // Store the original text for undo purposes
           const originalText = ('characters' in layer) ? layer.characters : null;
@@ -117,19 +130,121 @@ figma.ui.onmessage = async (msg) => {
   }
 };
 
-// function getUniqueRandomItem(array: any[]) {
+function getUniqueRandomItem(array: any[]) {
 
-//   if (array.length === 0) {
-//     // If the array is empty, reset it with the original data
-//     fullNames = ['Liam Müller', 'Emma Schmidt', 'Noah Becker', 'Olivia Wagner', 'Elias Richter', 'Sophia Schäfer', 'Mia Fischer', 'Lukas Hoffmann', 'Amelia Schulz', 'Benjamin Bauer', 'Emma Mayer', 'Paul Koch', 'Hannah Zimmermann', 'Leonard Schmitz'];
-//     return null; // Signal to reset the array
-//   }
-//   console.log(array);
-//   const randomIndex = Math.floor(Math.random() * array.length);
-//   const uniqueItem = array.splice(randomIndex, 1)[0];
-//   console.log(uniqueItem[randomIndex]);
-//   console.log('---+)_)))))_');
-//   console.log(uniqueItem);
-//   console.log('_dwlaldlawldawldadwla');
-//   return uniqueItem;
-// }
+  // if (array.length === 0) {
+  //   // If the array is empty, reset it with the original data
+  //   fullNames = ['Liam Müller', 'Emma Schmidt', 'Noah Becker', 'Olivia Wagner', 'Elias Richter', 'Sophia Schäfer', 'Mia Fischer', 'Lukas Hoffmann', 'Amelia Schulz', 'Benjamin Bauer', 'Emma Mayer', 'Paul Koch', 'Hannah Zimmermann', 'Leonard Schmitz'];
+  //   return null; // Signal to reset the array
+  // }
+  console.log(array);
+  const randomIndex = Math.floor(Math.random() * array.length);
+  const uniqueItem = array.splice(randomIndex, 1)[0];
+  console.log(uniqueItem[randomIndex]);
+  console.log('---+)_)))))_');
+  console.log(uniqueItem);
+  console.log('_dwlaldlawldawldadwla');
+  return uniqueItem;
+}
+
+const RANDOM_DATA_DRINK_WATER = [
+  'Tap Water',
+  'Bottled Spring Water',
+  'Mineral Water',
+  'Purified Water',
+  'Sparkling Water',
+  'Artesian Water',
+  'Tap Water',
+  'Bottled Spring Water',
+  'Mineral Water',
+  'Purified Water',
+  'Sparkling Water',
+  'Artesian Water',
+  'Tap Water',
+  'Bottled Spring Water',
+  'Mineral Water',
+  'Purified Water',
+  'Sparkling Water',
+  'Artesian Water',
+  'Tap Water',
+  'Bottled Spring Water',
+  'Mineral Water',
+  'Purified Water',
+  'Sparkling Water',
+  'Artesian Water',
+]
+
+const RANDOM_DATA_DRINK_COFFE = [
+  'Espresso',
+  'Americano',
+  'Latte',
+  'Cappuccino',
+  'Macchiato',
+  'Mocha',
+  'Cold Brew',
+  'Flat White',
+  'Affogato',
+  'Espresso',
+  'Americano',
+  'Latte',
+  'Cappuccino',
+  'Macchiato',
+  'Mocha',
+  'Cold Brew',
+  'Flat White',
+  'Affogato',
+  'Espresso',
+  'Americano',
+  'Latte',
+  'Cappuccino',
+  'Macchiato',
+  'Mocha',
+  'Cold Brew',
+  'Flat White',
+  'Affogato'
+
+]
+
+const RANDOM_DATA_FOOD_JEPANESE = [
+  'Sushi',
+  'Sashimi',
+  'Tempura',
+  'Ramen',
+  'Udon',
+  'Sukiyaki',
+  'Yakitori',
+  'Okonomiyaki',
+  'Takoyaki',
+  'Donburi',
+  'Chirashi',
+  'Nigiri',
+  'Miso',
+  'Hōtō',
+  'Kaiseki'
+]
+
+const RANDOM_DATA_FOOD_ITALY = [
+  'Pizza',
+  'Pasta',
+  'Risotto',
+  'Bruschetta',
+  'Tiramisu',
+  'Gelato',
+  'Minestrone',
+  'Cannelloni',
+  'Pesto',
+  'Calzone',
+  'Carpaccio',
+  'Gnocchi',
+  'Arancini',
+  'Amatriciana',
+  'Frittata',
+]
+
+function getListRandomData(type: 'Italian Cuisine' | 'Japanese Cuisine' | 'Coffee' | 'Water') {
+  if (type === 'Water') return RANDOM_DATA_DRINK_WATER;
+  else if (type === 'Coffee') return RANDOM_DATA_DRINK_COFFE
+  else if (type === 'Japanese Cuisine') return RANDOM_DATA_FOOD_JEPANESE
+  else if (type === 'Italian Cuisine') return RANDOM_DATA_FOOD_ITALY
+  return []
+}

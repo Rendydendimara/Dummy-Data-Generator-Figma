@@ -12,5 +12,8 @@
   "devDependencies": {
     "@figma/plugin-typings": "^1.84.0",
     "typescript": "*"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }
