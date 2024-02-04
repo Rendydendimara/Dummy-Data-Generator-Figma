@@ -5,31 +5,27 @@ let fullNames = ['Liam Müller', 'Emma Schmidt', 'Noah Becker', 'Olivia Wagner',
 const shortNames = ['Liam', 'Emma', 'Noah', 'Olivia', 'Elias', 'Sophia', 'Mia', 'Lukas', 'Amelia', 'Benjamin', 'Emma', 'Paul', 'Hannah', 'Leonard'];
 
 
-async function loadFontsAsync() {
+async function loadFontsAsync(fontFamiliy: string) {
   // Add the font names you are using in your plugin
   await Promise.all([
-    figma.loadFontAsync({ family: "Inter", style: "Regular" }),
+    figma.loadFontAsync({ family: fontFamiliy, style: "Regular" }),
     // Add more fonts if needed
   ]);
 }
+
 
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'searchText') {
     const searchQuery = msg.searchQuery;
     const selectedLayers = figma.currentPage.selection;
-    console.log('selectedLayers', selectedLayers)
     if (selectedLayers.length > 0) {
       let count = 0;
 
       selectedLayers.forEach(layer => {
-        if (layer) {
-          console.log(layer)
-        }
         if ('characters' in layer && layer.characters.includes(searchQuery)) {
           count++;
         }
       });
-      console.log('count', count)
       // Send the result  back to the UI
       figma.ui.postMessage({ type: 'searchResult', count });
       figma.ui.postMessage({ type: 'toUI', data: count });
@@ -43,14 +39,14 @@ figma.ui.onmessage = async (msg) => {
 
     if (selectedLayers.length > 0) {
       // Load fonts before making changes
-      await loadFontsAsync();
 
       // Create a copy of the names array to avoid modifying the original array
       const namesCopy = getListRandomData(msg.textToInsert) // [...msg.textToInsert];
-      console.log('namesCopy', namesCopy)
       // Apply changes
-      selectedLayers.forEach(async (layer, index) => {
+      selectedLayers.forEach(async (layer: any, index) => {
         if ('characters' in layer) {
+          const fontFamily = layer.fontName.family;
+          await loadFontsAsync(fontFamily);
           let textToInsert = '';
 
           // Check if there are still names in the array
@@ -79,21 +75,20 @@ figma.ui.onmessage = async (msg) => {
 
   }
   if (msg.type === 'findAndInsert') {
-    console.log(msg.findText, msg.replaceText)
     const findText = msg.findText;
     const replaceText = msg.replaceText;
 
     const selectedLayers = figma.currentPage.selection;
-    console.log('selectedLayers.length', selectedLayers.length)
     if (selectedLayers.length > 0) {
       // Load fonts before making changes
-      await loadFontsAsync();
+      // await loadFontsAsync();
 
       // Apply find-and-replace changes
-      selectedLayers.forEach(async (layer, index) => {
-        console.log('layer', layer)
+      selectedLayers.forEach(async (layer: any, index) => {
         if ('characters' in layer) {
           // if (layer.type === "TEXT") {  // Check if the layer is a text layer
+          const fontFamily = layer.fontName.family;
+          await loadFontsAsync(fontFamily);
 
           const namesCopy = getListRandomData(replaceText) // [...msg.textToInsert];
           let textToInsert = '';
@@ -109,11 +104,9 @@ figma.ui.onmessage = async (msg) => {
 
           // Get the current text content
           const currentText = layer.characters;
-          console.log('currentText', currentText)
 
           // Replace the text
           const newText = currentText.replace(new RegExp(findText, 'g'), textToInsert);
-          console.log('newText', newText)
           // Store the original text for undo purposes
           const originalText = ('characters' in layer) ? layer.characters : null;
 
@@ -137,13 +130,8 @@ function getUniqueRandomItem(array: any[]) {
   //   fullNames = ['Liam Müller', 'Emma Schmidt', 'Noah Becker', 'Olivia Wagner', 'Elias Richter', 'Sophia Schäfer', 'Mia Fischer', 'Lukas Hoffmann', 'Amelia Schulz', 'Benjamin Bauer', 'Emma Mayer', 'Paul Koch', 'Hannah Zimmermann', 'Leonard Schmitz'];
   //   return null; // Signal to reset the array
   // }
-  console.log(array);
   const randomIndex = Math.floor(Math.random() * array.length);
   const uniqueItem = array.splice(randomIndex, 1)[0];
-  console.log(uniqueItem[randomIndex]);
-  console.log('---+)_)))))_');
-  console.log(uniqueItem);
-  console.log('_dwlaldlawldawldadwla');
   return uniqueItem;
 }
 
